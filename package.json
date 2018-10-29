@@ -1,0 +1,11 @@
+{
+  "name": "treesizer",
+  "version": "0.0.1",
+  "main": "index.html",
+  "scripts": {
+    "start": "nw"
+  },
+  "dependencies": {
+    "nw": "^0.34.1"
+  }
+}

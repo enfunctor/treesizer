@@ -4,7 +4,11 @@
   "main": "index.html",
   "scripts": {
     "start": "nw",
-    "build": "nwb nwbuild -p win32,osx64,linux64 . -o ./dist"
+    "build":"npm run build-win32 && npm run build-win64 && npm run build-osx64 && npm run build-linux64",
+    "build-win32": "nwb nwbuild -p win32 . -o ./dist",
+    "build-win64": "nwb nwbuild -p win64 . -o ./dist",
+    "build-osx64": "nwb nwbuild -p osx64 . -o ./dist",
+    "build-linux64": "nwb nwbuild -p linux64 . -o ./dist"
   },
   "dependencies": {
     "nw": "^0.34.1",

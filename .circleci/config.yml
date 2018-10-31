@@ -27,16 +27,19 @@ jobs:
         paths:
         - node_modules
 
-  build-win32:
+  build-mac-x64:
     <<: *build-defaults
 
-  build-win64:
+  build-win-x86:
     <<: *build-defaults
 
-  build-osx64:
+  build-win-x64:
     <<: *build-defaults
 
-  build-linux64:
+  build-linux-x86:
+    <<: *build-defaults
+
+  build-linux-x64:
     <<: *build-defaults
 
 workflows:
@@ -44,15 +47,18 @@ workflows:
   deploy:
     jobs:
     - prepare
-    - build-win32:
+    - build-win-x86:
         requires:
         - prepare
-    - build-win64:
+    - build-win-x64:
         requires:
         - prepare
-    - build-osx64:
+    - build-mac-x64:
         requires:
         - prepare
-    - build-linux64:
+    - build-linux-x86:
+        requires:
+        - prepare
+    - build-linux-x64:
         requires:
         - prepare

@@ -3,15 +3,22 @@
   "version": "0.0.1",
   "main": "index.html",
   "scripts": {
-    "start": "nw",
-    "build":"npm run build-win32 && npm run build-win64 && npm run build-osx64 && npm run build-linux64",
-    "build-win32": "nwb nwbuild -p win32 . -o ./dist",
-    "build-win64": "nwb nwbuild -p win64 . -o ./dist",
-    "build-osx64": "nwb nwbuild -p osx64 . -o ./dist",
-    "build-linux64": "nwb nwbuild -p linux64 . -o ./dist"
+    "start": "run --mirror https://dl.nwjs.io/ .",
+    "build": "npm run build-win-x86 && npm run build-win-x64 && npm run build-linux-x86 && npm run build-linux-x64 && npm run build-mac-x64",
+    "build-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
+    "build-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ .",
+    "build-linux-x86": "build --tasks linux-x86 --mirror https://dl.nwjs.io/ .",
+    "build-linux-x64": "build --tasks linux-x64 --mirror https://dl.nwjs.io/ .",
+    "build-mac-x64": "build --tasks mac-x64 --mirror https://dl.nwjs.io/ ."
   },
   "dependencies": {
     "nw": "^0.34.1",
-    "nwjs-builder": "^1.14.0"
+    "nwjs-builder-phoenix": "^1.14.8"
+  },
+  "devDependencies": {
+    "install": "^0.12.2"
+  },
+  "build": {
+    "nwVersion": "0.34.1"
   }
 }

@@ -1,14 +1,58 @@
 version: 2
+
+defaults: &defaults
+  docker:
+  - image: circleci/node:10.12-browsers
+
+build-defaults: &build-defaults
+  <<: *defaults
+  steps:
+  - checkout
+  - restore_cache:
+      key: node_modules-{{ checksum "package-lock.json" }}
+  - run: npm run $CIRCLE_JOB
+
 jobs:
-  build-and-test:
-    docker:
-    - image: node:10.12-alpine
+  prepare:
+    <<: *defaults
     steps:
     - checkout
-    - run: npm ci
-    - run: npm run build
+    - restore_cache:
+        key: node_modules-{{ checksum "package-lock.json" }}
+    - run:
+        name: Install dependencies
+        command: if [ ! -d node_modules ]; then npm ci; fi
+    - save_cache:
+        key: node_modules-{{ checksum "package-lock.json" }}
+        paths:
+        - node_modules
+
+  build-win32:
+    <<: *build-defaults
+
+  build-win64:
+    <<: *build-defaults
+
+  build-osx64:
+    <<: *build-defaults
+
+  build-linux64:
+    <<: *build-defaults
+
 workflows:
   version: 2
-  build_and_test:
+  deploy:
     jobs:
-    - build-and-test
+    - prepare
+    - build-win32:
+        requires:
+        - prepare
+    - build-win64:
+        requires:
+        - prepare
+    - build-osx64:
+        requires:
+        - prepare
+    - build-linux64:
+        requires:
+        - prepare

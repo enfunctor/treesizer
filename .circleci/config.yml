@@ -11,6 +11,12 @@ build-defaults: &build-defaults
   - restore_cache:
       key: node_modules-{{ checksum "package-lock.json" }}
   - run: npm run $CIRCLE_JOB
+  - run: |
+      dirName=treesizer-`node -p "require('./package.json').version"`-`echo $CIRCLE_JOB|sed 's/^build-//g'`
+      mkdir artifacts
+      tar -zcf artifacts/$dirName.tar.gz dist/$dirName
+  - store_artifacts:
+      path: artifacts
 
 jobs:
   prepare:

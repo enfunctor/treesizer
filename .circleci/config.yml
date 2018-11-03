@@ -14,10 +14,26 @@ build-defaults: &build-defaults
   - run:
       name: Compress artifact
       command: |
-        dirName=treesizer-`node -p "require('./package.json').version"`-`echo $CIRCLE_JOB|sed 's/^build-//g'`
-        mkdir artifacts
-        tar -zcf artifacts/$dirName.tar.gz dist/$dirName
+        VERSION=`node -p "require('./package.json').version"`
+        MULTILINED_JOB_NAME=`echo $CIRCLE_JOB|perl -pe 's/-/\n/g'`
+        OS_NAME=`echo $MULTILINED_JOB_NAME | sed -n 2p`
+        ARCHITECTURE=`echo $MULTILINED_JOB_NAME | sed -n 3p`
+        ARTIFACT_NAME=treesizer-$VERSION-`echo $CIRCLE_JOB|sed 's/^build-//g'`
 
+        mkdir artifacts
+
+        if [ $OS_NAME='win' ]; then
+          ARTIFACT_PATH=artifacts/$ARTIFACT_NAME.zip
+          zip -r $ARTIFACT_PATH dist/$ARTIFACT_NAME
+        else
+          ARTIFACT_PATH=artifacts/$ARTIFACT_NAME.tar.gz
+          tar -zcfr $ARTIFACT_PATH -r dist/$ARTIFACT_NAME
+        fi
+
+  - persist_to_workspace:
+      root: artifacts
+      paths:
+      - ./*
 jobs:
   prepare:
     <<: *defaults
@@ -48,6 +64,13 @@ jobs:
   build-linux-x64:
     <<: *build-defaults
 
+  deploy:
+    <<: *defaults
+    steps:
+    - attach_workspace:
+        at: artifacts
+    - run: ls artifacts
+
 workflows:
   version: 2
   deploy:
@@ -68,3 +91,10 @@ workflows:
     - build-linux-x64:
         requires:
         - prepare
+    - deploy:
+        requires:
+        - build-win-x86
+        - build-win-x64
+        - build-mac-x64
+        - build-linux-x86
+        - build-linux-x64

@@ -39,14 +39,15 @@ build-defaults: &build-defaults
 
         mkdir artifacts
 
-        for dist_entry in dist/*; do
+        pushd dist
+        for DIST_ENTRY in *; do
           if [ $OS_NAME='win' ]; then
-            ARTIFACT_PATH=artifacts/$ARTIFACT_NAME.zip
-            zip -r $ARTIFACT_PATH $dist_entry
+            zip -r ../artifacts/$DIST_ENTRY.zip $DIST_ENTRY
           else
-            tar -zcfr $ARTIFACT_PATH $dist_entry
+            tar -zcfr ../artifacts/$DIST_ENTRY.tar.gz $DIST_ENTRY
           fi
         done
+        popd
 
   - persist_to_workspace:
       root: artifacts

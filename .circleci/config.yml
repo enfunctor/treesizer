@@ -22,13 +22,13 @@ build-defaults: &build-defaults
 
         mkdir artifacts
 
-        if [ $OS_NAME='win' ]; then
-          ARTIFACT_PATH=artifacts/$ARTIFACT_NAME.zip
-          zip -r $ARTIFACT_PATH dist/$ARTIFACT_NAME
-        else
-          ARTIFACT_PATH=artifacts/$ARTIFACT_NAME.tar.gz
-          tar -zcfr $ARTIFACT_PATH -r dist/$ARTIFACT_NAME
-        fi
+        for artifact_path in dist/*; do
+          if [ $OS_NAME='win' ]; then
+            zip -r $artifact_path dist/$ARTIFACT_NAME
+          else
+            tar -zcfr $artifact_path dist/$ARTIFACT_NAME
+          fi
+        done
 
   - persist_to_workspace:
       root: artifacts
@@ -49,19 +49,13 @@ jobs:
         paths:
         - node_modules
 
-  build-mac-x64:
+  build-mac:
     <<: *build-defaults
 
-  build-win-x86:
+  build-win:
     <<: *build-defaults
 
-  build-win-x64:
-    <<: *build-defaults
-
-  build-linux-x86:
-    <<: *build-defaults
-
-  build-linux-x64:
+  build-linux:
     <<: *build-defaults
 
   deploy:
@@ -76,25 +70,17 @@ workflows:
   deploy:
     jobs:
     - prepare
-    - build-win-x86:
+    - build-win:
         requires:
         - prepare
-    - build-win-x64:
+    - build-mac:
         requires:
         - prepare
-    - build-mac-x64:
-        requires:
-        - prepare
-    - build-linux-x86:
-        requires:
-        - prepare
-    - build-linux-x64:
+    - build-linux:
         requires:
         - prepare
     - deploy:
         requires:
-        - build-win-x86
-        - build-win-x64
-        - build-mac-x64
-        - build-linux-x86
-        - build-linux-x64
+        - build-win
+        - build-mac
+        - build-linux

@@ -9,8 +9,25 @@ build-defaults: &build-defaults
   steps:
   - checkout
   - restore_cache:
+      name: Restoring node_modules
       key: node_modules-{{ checksum "package-lock.json" }}
-  - run: npm run $CIRCLE_JOB
+  - run:
+      name: Generate .NW_BUILD_VERSION
+      command: |
+        echo `node -pe "require('./package.json').build.nwVersion"` > .NW_BUILD_VERSION
+        echo NW_BUILD_VERSION is `cat .NW_BUILD_VERSION`
+  - restore_cache:
+      name: Restoring builder cache
+      key: nwjs_builder-{{ .Environment.CIRCLE_JOB }}-{{ checksum ".NW_BUILD_VERSION" }}
+  - run:
+      name: Build
+      command: npm run $CIRCLE_JOB
+  - save_cache:
+      name: Saving builder cache
+      key: nwjs_builder-{{ .Environment.CIRCLE_JOB }}-{{ checksum ".NW_BUILD_VERSION" }}
+      paths:
+      - ~/.nwjs-builder/caches
+
   - run:
       name: Compress artifacts
       command: |

@@ -12,7 +12,7 @@ build-defaults: &build-defaults
       key: node_modules-{{ checksum "package-lock.json" }}
   - run: npm run $CIRCLE_JOB
   - run:
-      name: Compress artifact
+      name: Compress artifacts
       command: |
         VERSION=`node -p "require('./package.json').version"`
         MULTILINED_JOB_NAME=`echo $CIRCLE_JOB|perl -pe 's/-/\n/g'`
@@ -22,11 +22,12 @@ build-defaults: &build-defaults
 
         mkdir artifacts
 
-        for artifact_path in dist/*; do
+        for dist_entry in dist/*; do
           if [ $OS_NAME='win' ]; then
-            zip -r $artifact_path dist/$ARTIFACT_NAME
+            ARTIFACT_PATH=artifacts/$ARTIFACT_NAME.zip
+            zip -r $ARTIFACT_PATH $dist_entry
           else
-            tar -zcfr $artifact_path dist/$ARTIFACT_NAME
+            tar -zcfr $ARTIFACT_PATH $dist_entry
           fi
         done
 

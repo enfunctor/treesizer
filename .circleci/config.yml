@@ -3,17 +3,19 @@ version: 2
 defaults: &defaults
   docker:
   - image: enfunctor/nwjs-builder
+  environment:
+      CONFIG_VERSION: 1
 
 _steps:
   save_cache: &save_cache_node_modules
       name: Saving node_modules as cache
-      key: node_modules-{{ arch }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "package-lock.json" }}
+      key: node_modules-{{ arch }}-{{ .Environment.CONFIG_VERSION }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "package-lock.json" }}
       paths:
       - node_modules
 
   restore_cache: &restore_cache_node_modules
       name: Restoring cached node_modules
-      key: node_modules-{{ arch }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "package-lock.json" }}
+      key: node_modules-{{ arch }}-{{ .Environment.CONFIG_VERSION }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "package-lock.json" }}
 
 build-defaults: &build-defaults
   <<: *defaults
@@ -27,13 +29,13 @@ build-defaults: &build-defaults
         echo NW_BUILD_VERSION is `cat .NW_BUILD_VERSION`
   - restore_cache:
       name: Restoring builder cache
-      key: nwjs_builder-{{ arch }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum ".NW_BUILD_VERSION" }}
+      key: nwjs_builder-{{ arch }}-{{ .Environment.CONFIG_VERSION }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum ".NW_BUILD_VERSION" }}
   - run:
       name: Build
       command: npm run $CIRCLE_JOB
   - save_cache:
       name: Saving builder cache
-      key: nwjs_builder-{{ arch }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum ".NW_BUILD_VERSION" }}
+      key: nwjs_builder-{{ arch }}-{{ .Environment.CONFIG_VERSION }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum ".NW_BUILD_VERSION" }}
       paths:
       - ~/.nwjs-builder/caches
 

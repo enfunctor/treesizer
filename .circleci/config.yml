@@ -48,7 +48,7 @@ build-defaults: &build-defaults
 
         mkdir artifacts
 
-        pushd dist
+        cd dist
         for DIST_ENTRY in *; do
           if [ $OS_NAME='win' ]; then
             zip -r ../artifacts/$DIST_ENTRY.zip $DIST_ENTRY
@@ -56,7 +56,7 @@ build-defaults: &build-defaults
             tar -zcfr ../artifacts/$DIST_ENTRY.tar.gz $DIST_ENTRY
           fi
         done
-        popd
+        cd ..
 
   - persist_to_workspace:
       root: artifacts

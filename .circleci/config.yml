@@ -3,7 +3,7 @@ version: 2
 defaults: &defaults
   docker:
   - image: enfunctor/nwjs-builder
-  environment:
+    environment:
       CONFIG_VERSION: 1
 
 _steps:

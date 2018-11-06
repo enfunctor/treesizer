@@ -43,9 +43,8 @@ build-defaults: &build-defaults
       name: Compress artifacts
       command: |
         VERSION=`node -p "require('./package.json').version"`
-        MULTILINED_JOB_NAME=`echo $CIRCLE_JOB|perl -pe 's/-/\n/g'`
-        OS_NAME=`echo $MULTILINED_JOB_NAME | sed -n 2p`
-        ARCHITECTURE=`echo $MULTILINED_JOB_NAME | sed -n 3p`
+        OS_NAME=`node -p "'$CIRCLE_JOB'.match(/build-(.*)-(.*)/)[1]"`
+        ARCHITECTURE=`node -p "'$CIRCLE_JOB'.match(/build-(.*)-(.*)/)[2]"`
         ARTIFACT_NAME=treesizer-$VERSION-`echo $CIRCLE_JOB|sed 's/^build-//g'`
 
         mkdir artifacts
